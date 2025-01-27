@@ -10,6 +10,12 @@ namespace App\Controller;
  */
 class UsersController extends AppController
 {
+    public function beforeFilter(\Cake\Event\EventInterface $event)
+    {
+        parent::beforeFilter($event);
+    
+        $this->Authentication->addUnauthenticatedActions(['login', 'register']);    
+    }
     /**
      * Index method
      *
@@ -56,6 +62,23 @@ class UsersController extends AppController
         $this->set(compact('user'));
     }
 
+    public function register()
+    {
+        $user = $this->Users->newEmptyEntity();
+        if ($this->request->is('post')) {
+            $data = $this->request->getData();
+            $data['balance'] = 0; // pas d'argent lors de la création du compte
+            $data['role'] = "user"; // rôle utilisateur par défaut
+            $user = $this->Users->patchEntity($user, $data);
+            if ($this->Users->save($user)) {
+                $this->Flash->success(__('Registration successful.'));
+                return $this->redirect(['action' => 'login']);
+            }
+            $this->Flash->error(__('Registration failed. Please try again.'));
+        }
+        $this->set(compact('user'));
+    }
+
     /**
      * Edit method
      *
@@ -96,5 +119,23 @@ class UsersController extends AppController
         }
 
         return $this->redirect(['action' => 'index']);
+    }
+
+    public function login(){
+        $result = $this->Authentication->getResult();
+        // If the user is logged in send them away.
+        if ($result->isValid()) {
+            $target = $this->Authentication->getLoginRedirect() ?? '/home';
+            return $this->redirect($target);
+        }
+        if ($this->request->is('post')) {
+            $this->Flash->error('Invalid username or password');
+        }
+    }
+
+    public function logout()
+    {
+        $this->Authentication->logout();
+        return $this->redirect(['controller' => 'Users', 'action' => 'login']);
     }
 }
