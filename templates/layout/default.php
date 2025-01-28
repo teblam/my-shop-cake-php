@@ -39,8 +39,16 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
             <a href="<?= $this->Url->build('/') ?>"><span>Cake</span>PHP</a>
         </div>
         <div class="top-nav-links">
-            <a target="_blank" rel="noopener" href="https://book.cakephp.org/5/">Documentation</a>
-            <a target="_blank" rel="noopener" href="https://api.cakephp.org/">API</a>
+        <?php 
+            $this->loadHelper('Authentication.Identity');
+            if ($this->Identity->isLoggedIn()) : ?>
+                <span class="user-info">
+                    <?= h($this->Identity->get('first_name')) ?> <?= h($this->Identity->get('name')) ?>
+                </span>
+                <?= $this->Html->link('Déconnexion', ['controller' => 'Users', 'action' => 'logout']) ?>
+            <?php else : ?>
+                <?= $this->Html->link('Connexion', ['controller' => 'Users', 'action' => 'login']) ?>
+            <?php endif; ?>
         </div>
     </nav>
     <main class="main">
