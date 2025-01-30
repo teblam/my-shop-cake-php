@@ -1,10 +1,15 @@
 <div class="users form content">
+    <?= $this->Flash->render() ?>
+    <h3>Connexion</h3>
     <?= $this->Form->create() ?>
     <fieldset>
-        <legend><?= __('Please enter your email and password') ?></legend>
-        <?= $this->Form->control('email') ?>
-        <?= $this->Form->control('password') ?>
+        <?= $this->Form->control('email', ['label' => 'Email']) ?>
+        <?= $this->Form->control('password', ['label' => 'Mot de passe']) ?>
     </fieldset>
-    <?= $this->Form->button(__('Login')); ?>
+    <?= $this->Form->button(__('Se connecter')); ?>
     <?= $this->Form->end() ?>
-</div>
+    
+    <div class="actions">
+        <?= $this->Html->link("S'inscrire", ['action' => 'register']) ?>
+    </div>
+</div> 
