@@ -38,6 +38,11 @@ class UsersController extends AppController
      */
     public function view($id = null)
     {
+        if($this->Authentication->getIdentity()->role !== 'admin') {
+            $this->Flash->error(__('Vous devez être administrateur pour effectuer cette action'));
+            return $this->redirect('/');
+        }
+
         $user = $this->Users->get($id, contain: []);
         $this->set(compact('user'));
     }
@@ -88,12 +93,20 @@ class UsersController extends AppController
      */
     public function edit($id = null)
     {
+        if($this->Authentication->getIdentity()->role !== 'admin') {
+            $this->Flash->error(__('Vous devez être administrateur pour effectuer cette action'));
+            return $this->redirect('/');
+        }
+
         $user = $this->Users->get($id, contain: []);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $user = $this->Users->patchEntity($user, $this->request->getData());
             if ($this->Users->save($user)) {
+                // Rafraîchir l'identité si l'utilisateur modifié est celui connecté
+                if ($user->id === $this->Authentication->getIdentity()->id) {
+                    $this->Authentication->setIdentity($user);
+                }
                 $this->Flash->success(__('The user has been saved.'));
-
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('The user could not be saved. Please, try again.'));
@@ -110,6 +123,11 @@ class UsersController extends AppController
      */
     public function delete($id = null)
     {
+        if($this->Authentication->getIdentity()->role !== 'admin') {
+            $this->Flash->error(__('Vous devez être administrateur pour effectuer cette action'));
+            return $this->redirect('/');
+        }
+
         $this->request->allowMethod(['post', 'delete']);
         $user = $this->Users->get($id);
         if ($this->Users->delete($user)) {
@@ -137,5 +155,27 @@ class UsersController extends AppController
     {
         $this->Authentication->logout();
         return $this->redirect(['controller' => 'Users', 'action' => 'login']);
+    }
+
+    public function resetPassword($id = null)
+    {
+        if($this->Authentication->getIdentity()->role !== 'admin') {
+            $this->Flash->error(__('Vous devez être administrateur pour effectuer cette action'));
+            return $this->redirect('/');
+        }
+    
+        $user = $this->Users->get($id);
+    
+        if ($this->request->is(['post', 'put'])) {
+            $user->password = $this->request->getData('password');
+            
+            if ($this->Users->save($user)) {
+                $this->Flash->success(__('Mot de passe mis à jour avec succès'));
+                return $this->redirect(['action' => 'view', $id]);
+            }
+            $this->Flash->error(__('Erreur lors de la mise à jour'));
+        }
+        
+        $this->set(compact('user'));
     }
 }

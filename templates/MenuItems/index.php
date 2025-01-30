@@ -5,6 +5,7 @@
  */
 ?>
 <div class="menuItems index content">
+    <?= $this->Html->link(__('Generate from Controllers'), ['action' => 'generate'], ['class' => 'button float-right']) ?>
     <?= $this->Html->link(__('New Menu Item'), ['action' => 'add'], ['class' => 'button float-right']) ?>
     <h3><?= __('Menu Items') ?></h3>
     <div class="table-responsive">

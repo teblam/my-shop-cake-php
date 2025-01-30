@@ -62,6 +62,8 @@ return function (RouteBuilder $routes): void {
          */
         $builder->connect('/pages/*', 'Pages::display');
 
+        $builder->connect('/users/reset-password/*', ['controller' => 'Users', 'action' => 'resetPassword']);
+
         /*
          * Connect catchall routes for all controllers.
          *

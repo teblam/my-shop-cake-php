@@ -5,7 +5,9 @@
  */
 ?>
 <div class="users index content">
-    <?= $this->Html->link(__('New User'), ['action' => 'add'], ['class' => 'button float-right']) ?>
+    <?php if($this->Identity->get('role') === 'admin'): ?>
+        <?= $this->Html->link(__('New User'), ['action' => 'add'], ['class' => 'button float-right']) ?>
+    <?php endif; ?>
     <h3><?= __('Users') ?></h3>
     <div class="table-responsive">
         <table>
@@ -17,7 +19,9 @@
                     <th><?= $this->Paginator->sort('email') ?></th>
                     <th><?= $this->Paginator->sort('balance') ?></th>
                     <th><?= $this->Paginator->sort('role') ?></th>
-                    <th class="actions"><?= __('Actions') ?></th>
+                    <?php if($this->Identity->get('role') === 'admin'): ?>
+                        <th class="actions"><?= __('Actions') ?></th>
+                    <?php endif; ?>
                 </tr>
             </thead>
             <tbody>
@@ -29,11 +33,14 @@
                     <td><?= h($user->email) ?></td>
                     <td><?= $this->Number->format($user->balance) ?></td>
                     <td><?= h($user->role) ?></td>
-                    <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', $user->id]) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $user->id]) ?>
-                        <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $user->id], ['confirm' => __('Are you sure you want to delete # {0}?', $user->id)]) ?>
-                    </td>
+                    <?php if($this->Identity->get('role') === 'admin'): ?>
+                        <td class="actions">
+                                <?= $this->Html->link(__('View'), ['action' => 'view', $user->id]) ?>
+                                <?= $this->Html->link(__('Edit'), ['action' => 'edit', $user->id]) ?>
+                                <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $user->id], ['confirm' => __('Are you sure you want to delete # {0}?', $user->id)]) ?>
+                                <?= $this->Html->link(__('Réinitialiser MDP'), ['action' => 'resetPassword', $user->id]) ?>
+                        </td>
+                    <?php endif; ?>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
